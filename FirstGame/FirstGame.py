@@ -16,9 +16,7 @@ class App:
         self.screen = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         pygame.display.set_caption('Super Pacman')
         self.highScore = 0
-        self.pacman = Pacman(200,200)
-        #self.wall = Wall(self.weight - 1180, self.height - 620)
-        #self.wall2 = Wall(self.weight - 1180, self.height - 620)
+        self.pacman = Pacman(500,500)
         self.block_list = []
         self.sprite_list = []
         self.wallCount = 0
@@ -31,39 +29,23 @@ class App:
                 if c == 'W':
                     self.block_list.append(Wall(self.weight - self.levelXStart, self.height-self.levelYStart))
                     self.sprite_list.append(Wall(self.weight - self.levelXStart, self.height-self.levelYStart))
-                    print("X: ", self.levelXStart)
-                    print(self.levelWidth)
                 self.levelXStart = self.levelXStart - 20
             self.levelWidth = 1
             self.levelYStart = self.levelYStart - 20
             self.levelXStart = 1180
-            print("Y: ", self.levelYStart)
         self.level1.close()
-        #self.wall1 = Wall(100, 120)
         self.inputHandler = InputHandler(self, self.pacman)
         # initialize font; must be called after 'pygame.init()' to avoid 'Font not Initialized' error
         self.monospaceFont = pygame.font.SysFont("monospace", 15)
         self.highScoreTitle = self.monospaceFont.render("HIGH SCORE", 1, (255,255,255))
         self.highScoreText = self.monospaceFont.render(str(self.highScore), 1, (255,255,255))
         self._running = True
-        #self.levelMap = [['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'],
-        #                 ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-        #                 ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-        #                 ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-        #                 ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-        #                 ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-        #                 ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-        #                 ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-        #                 ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-        #                 ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-        #                 ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-        #                 ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-        #                 ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W']]
 
         
 
     def update(self):
         self.inputHandler.update()
+        self.checkCollision()
         pygame.display.update()
         clock.tick(60)
         pass
@@ -74,18 +56,23 @@ class App:
         self.pacman.render(self.screen)
         for block in self.block_list:
             block.render(self.screen)
-        #self.wall.render(self.screen)
-        #self.wall1.render(self.screen)
-       # self.wall2.render(self.screen)
-        #rect1 = pygame.draw.rect(self.screen,(0,0,255),(0,200,500,10))
-        #rect2 = pygame.draw.rect(self.screen,(0,0,255),(200,0,100,300))
-        #d = {1: rect2}
-  
-        #rects_values = 1
-        #val = rect1.collidedict(d, rects_values)
         pass
     def on_cleanup(self):
         pygame.quit()
+
+    def checkCollision(self):
+        oldX = self.pacman.x
+        oldY = self.pacman.y
+        for block in self.block_list:
+            if(self.pacman.rect.colliderect(block.rect)):
+                if(self.pacman.velocityX > 0 or self.pacman.velocityX < 0):
+                    self.pacman.x = oldX
+                    self.pacman.velocityX = 0
+                if(self.pacman.velocityY > 0 or self.pacman.velocityY < 0):
+                    self.pacman.y = oldY
+                    self.pacman.velocityY = 0
+
+                
  
     def on_execute(self):
         if self.on_init() == False:

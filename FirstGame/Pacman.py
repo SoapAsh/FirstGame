@@ -15,18 +15,20 @@ class Pacman:
         self.ani_sheet_max = len(self.animations) - 1
         self.current_ani_sheet = pygame.image.load(self.animations[2])
         #self.eatSound = pygame.mixer.Sound('sounds/pacman/beep.wav')
+        self.velocityX = 0
+        self.velocityY = 0
         self.ani_max = 2
         self.ani_pos = 0
-        self.speed = 5
+        self.speed = 2
         self.ani_speed_init = 10
         self.ani_speed = self.ani_speed_init
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
-    def update(self, pos, direction):
+    def update(self, direction):
         if direction != self.ani_sheet_pos:
             self.ani_sheet_pos = direction
             self.current_ani_sheet = pygame.image.load(self.animations[self.ani_sheet_pos])
-        if pos != 0:
+        if self.velocityX != 0 or self.velocityY != 0:
             self.ani_speed-= 1
             if self.x < 0:
                 self.x = 0
@@ -34,10 +36,10 @@ class Pacman:
                 self.y = 0
             if self.ani_sheet_pos == 2 or self.ani_sheet_pos == 1:
                 if self.x < 1280 and self.x >= -1:
-                    self.x += pos
+                    self.x += self.velocityX
             else:
                 if self.y < 720 and self.y >= -1:
-                    self.y += pos
+                    self.y += self.velocityY
             if self.ani_speed == 0:
                 self.ani_speed = self.ani_speed_init
                 if self.ani_pos == self.ani_max:
